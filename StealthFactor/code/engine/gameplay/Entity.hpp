@@ -1,5 +1,4 @@
 #pragma once
-
 #include <engine/graphics/GraphicsManager.hpp>
 #include <engine/physics/PhysicsManager.hpp>
 
@@ -10,6 +9,7 @@ namespace engine
 		class Entity
 		{
 		public:
+
 			Entity();
 			virtual ~Entity();
 
@@ -26,10 +26,12 @@ namespace engine
 			const graphics::ShapeList& getShapeList();
 
 		protected:
+
 			graphics::ShapeList shapeList;
 			dGeomID collisionGeomId;
 
 		private:
+
 			sf::Vector2f _position{};
 			float _rotation{ 0.f };
 			sf::Transform _transform;

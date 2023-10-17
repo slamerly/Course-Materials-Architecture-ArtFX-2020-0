@@ -4,6 +4,7 @@
 #include <string>
 #include <SFML/System/Vector2.hpp>
 #include <engine/gameplay/entities/Player.hpp>
+#include <engine/IManager.hpp>
 
 namespace engine
 {
@@ -16,40 +17,39 @@ namespace engine
 			class Player;
 		}
 
-		class Manager
-		{
-		public:
-			void update();
-			void draw();
-			void clear();
+        class GameplayManager : public IManager
+        {
+        public:
 
-			void gameOver();
+            GameplayManager();
 
-			sf::Vector2f getViewCenter() const;
+            void initialize() override;
+            void update() override;
+            void clear() override;
 
-			void loadMap(const std::string &mapName);
-			void loadNextMap();
+            void gameOver();
 
-			const entities::Player &getPlayer() const;
+            sf::Vector2f getViewCenter() const;
 
-			static const float CELL_SIZE;
+            void loadMap(const std::string& mapName);
+            void loadNextMap();
 
-			static Manager &getInstance();
+            const entities::Player& getPlayer() const;
 
-		private:
-			std::set<Entity *> entities;
-			entities::Player *playerEntity{};
+            static const float CELL_SIZE;
 
-			// Map
-			std::string currentMapName;
-			std::string nextMapName;
-			int rows{ 0 };
-			int columns{ 0 };
+        private:
 
-			bool preventMapCompletion{ false };
-			bool nextMapRequested{ false };
+            std::set<Entity*> entities;
+            entities::Player* playerEntity{};
 
-			static Manager *instance;
-		};
+            std::string currentMapName;
+            std::string nextMapName;
+            int rows{ 0 };
+            int columns{ 0 };
+
+            bool preventMapCompletion{ false };
+            bool nextMapRequested{ false };
+        };
 	}
 }

@@ -7,6 +7,7 @@
 #include <SFML/Graphics/Transform.hpp>
 #include <SFML/Window/Event.hpp>
 #include <engine/graphics/ShapeList.hpp>
+#include <engine/IManager.hpp>
 
 namespace engine
 {
@@ -14,19 +15,20 @@ namespace engine
 	{
 		class ShapeList;
 
-		class Manager
+		class GraphicsManager : public IManager
 		{
 		public:
-			Manager();
-			~Manager();
 
-			void clear();
+			GraphicsManager();
+			~GraphicsManager();
+
+			void initialize() override;
+			void update() override;
+			void clear() override;
+
+			//void clear();
 			void draw(const ShapeList &shapeList, const sf::Transform &transform);
 			void display();
-
-			bool hasFocus() const;
-
-			static Manager &getInstance();
 
 			static sf::RenderWindow &getWindow() { return window; }
 
@@ -34,12 +36,12 @@ namespace engine
 			static const sf::Int16 getWINDOW_HEIGHT() { return WINDOW_HEIGHT; }
 
 		private:
+
 			static sf::RenderWindow window;
 
 			static const sf::Int16 WINDOW_WIDTH = 800;
 			static const sf::Int16 WINDOW_HEIGHT = 600;
 
-			static Manager *instance;
 		};
 	}
 }

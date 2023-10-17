@@ -1,5 +1,4 @@
 #include "engine/Engine.hpp"
-
 #include <cassert>
 #include <iostream>
 #include <sstream>
@@ -34,26 +33,26 @@ namespace engine
 	{
 		running = true;
 
-		gameplay::Manager::getInstance().loadMap(startMap);
+		gameplayM.loadMap(startMap);
 
 		sf::Clock clock;
 		while (running)
 		{
 			deltaTime = clock.restart().asSeconds();
 
-			physics::Manager::getInstance().update();
-			gameplay::Manager::getInstance().update();
+			physicsM.update();
+			gameplayM.update();
 
-			graphics::Manager::getInstance().clear();
+			graphicsM.clear();
 
-			gameplay::Manager::getInstance().draw();
+			//graphicsM.draw();
 
-			graphics::Manager::getInstance().display();
+			graphicsM.display();
 
-			input::Manager::getInstance().clear();
+			inputM.clear();
 
 			sf::Event event;
-			while (graphics::Manager::getWindow().pollEvent(event))
+			while (graphicsM.getWindow().pollEvent(event))
 			{
 				switch (event.type)
 				{
@@ -62,11 +61,11 @@ namespace engine
 					break;
 
 				case sf::Event::KeyPressed:
-					input::Manager::getInstance().onKeyPressed(event.key);
+					inputM.onKeyPressed(event.key);
 					break;
 
 				case sf::Event::KeyReleased:
-					input::Manager::getInstance().onKeyReleased(event.key);
+					inputM.onKeyReleased(event.key);
 					break;
 
 				default:

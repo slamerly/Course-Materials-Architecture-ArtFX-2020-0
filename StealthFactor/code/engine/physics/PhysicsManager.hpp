@@ -1,16 +1,17 @@
 #pragma once
-
 #include <set>
 #include <vector>
 #include <ode/collision.h>
+#include "engine/IManager.hpp"
 
 namespace engine
 {
 	namespace physics
 	{
-		class Manager
+		class PhysicsManager : public IManager
 		{
 		public:
+
 			struct Collision
 			{
 				dGeomID o1;
@@ -21,24 +22,23 @@ namespace engine
 
 			using Collisions = std::vector<Collision>;
 
-			Manager();
-			~Manager();
+			PhysicsManager();
+			~PhysicsManager() override;
 
-			void update();
+			void initialize() override;
+			void update() override;
+			void clear() override;
 
 			dSpaceID getSpaceId() const;
 
 			std::set<dGeomID> getCollisionsWith(dGeomID object) const;
 
-			static Manager &getInstance();
-
 		private:
+
 			dSpaceID spaceId;
 			Collisions frameCollisions;
 
 			static void nearCallback(void *data, dGeomID o1, dGeomID o2);
-
-			static Manager *instance;
 		};
 	}
 }

@@ -1,17 +1,17 @@
 #pragma once
-
 #include <string>
-
 #include <engine/gameplay/GameplayManager.hpp>
 #include <engine/graphics/GraphicsManager.hpp>
 #include <engine/physics/PhysicsManager.hpp>
 #include <engine/input/InputManager.hpp>
+#include <engine/IManager.hpp >
 
 namespace engine
 {
 	class Engine
 	{
 	public:
+
 		void loadConfiguration();
 
 		void run();
@@ -21,18 +21,18 @@ namespace engine
 
 		static Engine &getInstance();
 
-		gameplay::Manager &getGameplayM() { return gameplayM; }
-		graphics::Manager &getGraphicsM() { return graphicsM; }
-		physics::Manager &getPhysicsM() { return physicsM; }
-		input::Manager &getInputM() { return inputM; }
+		gameplay::GameplayManager &getGameplayM() { return gameplayM; }
+		graphics::GraphicsManager &getGraphicsM() { return graphicsM; }
+		physics::PhysicsManager &getPhysicsM() { return physicsM; }
+		input::InputManager &getInputM() { return inputM; }
 
 	private:
-		gameplay::Manager gameplayM;
-		graphics::Manager graphicsM;
-		physics::Manager physicsM;
-		input::Manager inputM;
-		
 
+		gameplay::GameplayManager gameplayM;
+		graphics::GraphicsManager graphicsM;
+		physics::PhysicsManager physicsM;
+		input::InputManager inputM;
+		
 		bool running;
 		float deltaTime;
 

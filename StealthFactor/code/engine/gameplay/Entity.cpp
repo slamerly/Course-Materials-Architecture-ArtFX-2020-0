@@ -19,7 +19,8 @@ namespace engine
 
 		void Entity::draw()
 		{
-			graphics::Manager::getInstance().draw(shapeList, getTransform());
+			graphics::GraphicsManager graphicsManager = graphics::GraphicsManager();
+			graphicsManager.draw(shapeList, getTransform());
 		}
 
 		const sf::Vector2f & Entity::getPosition() const

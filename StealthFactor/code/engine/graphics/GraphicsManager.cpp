@@ -4,9 +4,7 @@ namespace engine
 {
 	namespace graphics
 	{
-		Manager *Manager::instance = nullptr;
-
-		Manager::Manager()
+		GraphicsManager::GraphicsManager()
 		{
 			window.create(sf::VideoMode{ (unsigned int)WINDOW_WIDTH, (unsigned int)WINDOW_HEIGHT }, "Stealth Factor");
 
@@ -16,20 +14,29 @@ namespace engine
 			window.setView(view);
 		}
 
-		Manager::~Manager()
+		GraphicsManager::~GraphicsManager()
 		{
 			window.close();
 		}
 
-		void Manager::clear()
+		void GraphicsManager::initialize()
+		{
+			// Initialisation
+		}
+
+		void GraphicsManager::update()
+		{
+		}
+
+		void GraphicsManager::clear()
 		{
 			window.clear(sf::Color::Black);
 
-			/*sf::View view{ gameplay::Manager::getInstance().getViewCenter(), sf::Vector2f{(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT} };
+			/*sf::View view{ gameplay::GraphicsManager::getInstance().getViewCenter(), sf::Vector2f{(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT} };
 			window.setView(view);*/
 		}
 
-		void Manager::draw(const ShapeList &shapeList, const sf::Transform &transform)
+		void GraphicsManager::draw(const ShapeList &shapeList, const sf::Transform &transform)
 		{
 			sf::RenderStates renderStates{ transform };
 			for (auto shape : shapeList.getShapes())
@@ -38,22 +45,9 @@ namespace engine
 			}
 		}
 
-		void Manager::display()
+		void GraphicsManager::display()
 		{
 			window.display();
-		}
-
-		bool Manager::hasFocus() const
-		{
-			return window.hasFocus();
-		}
-
-		Manager &Manager::getInstance()
-		{
-			if (!instance)
-				instance = new Manager();
-
-			return *instance;
 		}
 	}
 }

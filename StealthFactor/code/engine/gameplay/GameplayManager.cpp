@@ -15,10 +15,17 @@ namespace engine
 {
 	namespace gameplay
 	{
-		const float Manager::CELL_SIZE = 50.f;
-		Manager *Manager::instance = nullptr;
+		const float GameplayManager::CELL_SIZE = 50.f;
 
-		void Manager::update()
+		GameplayManager::GameplayManager()
+		{
+		}
+
+		void GameplayManager::initialize()
+		{
+		}
+
+		void GameplayManager::update()
 		{
 			for (auto entity : entities)
 			{
@@ -33,32 +40,36 @@ namespace engine
 			}
 		}
 
-		void Manager::draw()
+		/*void GameplayManager::draw()
 		{
 			for (auto entity : entities)
 			{
 				entity->draw();
 			}
-		}
+		}*/
 
-		void Manager::clear()
+		void GameplayManager::clear()
 		{
-			sf::View view{ getInstance().getViewCenter(), sf::Vector2f{(float)graphics::Manager::getWINDOW_WIDTH(), (float)graphics::Manager::getWINDOW_HEIGHT()}};
-			graphics::Manager::getWindow().setView(view);
+			// Logique de nettoyage du gestionnaire de gameplay.
+			for (auto entity : entities)
+			{
+				delete entity;
+			}
+			entities.clear();
 		}
 
-		void Manager::gameOver()
+		void GameplayManager::gameOver()
 		{
 			std::cout << "Game over" << std::endl;
 			loadMap(currentMapName);
 		}
 
-		sf::Vector2f Manager::getViewCenter() const
+		sf::Vector2f GameplayManager::getViewCenter() const
 		{
 			return sf::Vector2f{ columns * (CELL_SIZE / 2.f), rows * (CELL_SIZE / 2.f) };
 		}
 
-		void Manager::loadMap(const std::string & mapName)
+		void GameplayManager::loadMap(const std::string & mapName)
 		{
 			for (auto entity : entities)
 			{
@@ -146,7 +157,7 @@ namespace engine
 			}
 		}
 
-		void Manager::loadNextMap()
+		void GameplayManager::loadNextMap()
 		{
 			if (!preventMapCompletion)
 			{
@@ -154,18 +165,19 @@ namespace engine
 			}
 		}
 
-		const entities::Player &Manager::getPlayer() const
+		const entities::Player &GameplayManager::getPlayer() const
 		{
 			assert(playerEntity);
 			return *playerEntity;
 		}
-
-		Manager &Manager::getInstance()
-		{
-			if (!instance)
-				instance = new Manager();
-
-			return *instance;
-		}
 	}
 }
+
+
+
+
+/*void GameplayManager::clear()
+{
+	sf::View view{ getInstance().getViewCenter(), sf::Vector2f{(float)graphics::GameplayManager::getWINDOW_WIDTH(), (float)graphics::GameplayManager::getWINDOW_HEIGHT()} };
+	graphics::GameplayManager::getWindow().setView(view);
+}*/

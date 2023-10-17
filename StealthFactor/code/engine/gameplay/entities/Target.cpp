@@ -1,5 +1,4 @@
 #include "Target.hpp"
-
 #include <engine/gameplay/GameplayManager.hpp>
 
 namespace engine
@@ -11,8 +10,9 @@ namespace engine
 			Target::Target()
 			{
 				shapeList.load("target");
+				physics::PhysicsManager physicsManager = physics::PhysicsManager();
 
-				collisionGeomId = dCreateBox(physics::Manager::getInstance().getSpaceId(), gameplay::Manager::CELL_SIZE * 0.9f, gameplay::Manager::CELL_SIZE * 0.9f, 1.f);
+				collisionGeomId = dCreateBox(physicsManager.getSpaceId(), gameplay::GameplayManager::CELL_SIZE * 0.9f, gameplay::GameplayManager::CELL_SIZE * 0.9f, 1.f);
 				dGeomSetData(collisionGeomId, this);
 			}
 

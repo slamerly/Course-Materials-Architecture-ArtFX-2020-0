@@ -1,5 +1,4 @@
 #pragma once
-
 #include <engine/gameplay/Entity.hpp>
 
 namespace engine

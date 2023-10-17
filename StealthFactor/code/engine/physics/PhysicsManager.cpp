@@ -1,44 +1,53 @@
 #include "PhysicsManager.hpp"
-
 #include <ode/odeinit.h>
 
 namespace engine
 {
 	namespace physics
 	{
-		Manager *Manager::instance = nullptr;
-
-		Manager::Collision::Collision(dGeomID o1, dGeomID o2)
+		PhysicsManager::Collision::Collision(dGeomID o1, dGeomID o2)
 			: o1{ o1 }
 			, o2{ o2 }
 		{
 		}
 
-		Manager::Manager()
+		PhysicsManager::PhysicsManager()
 		{
 			dInitODE();
 
 			spaceId = dHashSpaceCreate(0);
 		}
 
-		Manager::~Manager()
+		PhysicsManager::~PhysicsManager()
 		{
 			dSpaceDestroy(spaceId);
 			dCloseODE();
 		}
 
-		void Manager::update()
+		void initialize()
 		{
-			frameCollisions.clear();
-			dSpaceCollide(spaceId, &frameCollisions, &Manager::nearCallback);
 		}
 
-		dSpaceID Manager::getSpaceId() const
+		void PhysicsManager::initialize()
+		{
+		}
+
+		void PhysicsManager::update()
+		{
+			frameCollisions.clear();
+			dSpaceCollide(spaceId, &frameCollisions, &PhysicsManager::nearCallback);
+		}
+
+		void PhysicsManager::clear()
+		{
+		}
+
+		dSpaceID PhysicsManager::getSpaceId() const
 		{
 			return spaceId;
 		}
 
-		std::set<dGeomID> Manager::getCollisionsWith(dGeomID object) const
+		std::set<dGeomID> PhysicsManager::getCollisionsWith(dGeomID object) const
 		{
 			std::set<dGeomID> objectCollisions;
 
@@ -57,18 +66,10 @@ namespace engine
 			return objectCollisions;
 		}
 
-		void Manager::nearCallback(void *data, dGeomID o1, dGeomID o2)
+		void PhysicsManager::nearCallback(void *data, dGeomID o1, dGeomID o2)
 		{
 			auto &frameCollisions = *reinterpret_cast<Collisions *>(data);
 			frameCollisions.emplace_back(o1, o2);
-		}
-
-		Manager &Manager::getInstance()
-		{
-			if (!instance)
-				instance = new Manager();
-
-			return *instance;
 		}
 	}
 }

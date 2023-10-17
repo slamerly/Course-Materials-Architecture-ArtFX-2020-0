@@ -1,5 +1,4 @@
 #include "Enemy.hpp"
-
 #include <iostream>
 #include <sstream>
 #include <pugixml/pugixml.hpp>
@@ -11,23 +10,26 @@ namespace engine
 	{
 		namespace entities
 		{
+			physics::PhysicsManager physicsManager = physics::PhysicsManager();
+			gameplay::GameplayManager gameplayManager = gameplay::GameplayManager();
+
 			Enemy::Enemy(const std::string &archetypeName)
 			{
-				collisionGeomId = dCreateBox(physics::Manager::getInstance().getSpaceId(), 0.f, 0.f, 0.f);
+				collisionGeomId = dCreateBox(physicsManager.getSpaceId(), 0.f, 0.f, 0.f);
 				dGeomSetData(collisionGeomId, this);
 				loadArchetype(archetypeName);
 			}
 
 			void Enemy::update()
 			{
-				auto &player = gameplay::Manager::getInstance().getPlayer();
+				auto &player = gameplayManager.getPlayer();
 				if (player.hasJustMoved())
 				{
 					auto &playerPosition = player.getPosition();
 					auto &myPosition = getPosition();
 
 					auto offset = myPosition - playerPosition;
-					offset /= gameplay::Manager::CELL_SIZE;
+					offset /= gameplay::GameplayManager::CELL_SIZE;
 					float distance2 = offset.x * offset.x + offset.y * offset.y;
 					if (distance2 <= visionRadius * visionRadius)
 					{
@@ -37,7 +39,7 @@ namespace engine
 						}
 						else
 						{
-							gameplay::Manager::getInstance().gameOver();
+							gameplayManager.gameOver();
 						}
 					}
 					else

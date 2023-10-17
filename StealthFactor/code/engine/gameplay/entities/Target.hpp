@@ -1,6 +1,6 @@
 #pragma once
-
 #include <engine/gameplay/Entity.hpp>
+#include <engine/physics/PhysicsManager.hpp>
 
 namespace engine
 {

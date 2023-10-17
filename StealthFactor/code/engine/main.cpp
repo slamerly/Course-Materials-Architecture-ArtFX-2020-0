@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cli.hpp>
 #include <engine/Engine.hpp>
+#include "engine/graphics/GraphicsManager.hpp"
+#include "engine/physics/PhysicsManager.hpp"
 
 #if defined(PLATFORM_LINUX)
 #include <unistd.h>
@@ -43,6 +45,10 @@ int main(int argc, const char **argv)
 
 	engine::Engine::getInstance().loadConfiguration();
 	engine::Engine::getInstance().run();
+	engine::graphics::GraphicsManager graphicsManager;
+	engine::physics::PhysicsManager physicsManager;
+	engine::gameplay::GameplayManager gameplayManager;
+	engine::input::InputManager inputManager;
 
 	return EXIT_SUCCESS;
 }
