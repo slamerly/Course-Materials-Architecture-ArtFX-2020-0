@@ -7,7 +7,6 @@
 #include <SFML/Graphics/Transform.hpp>
 #include <SFML/Window/Event.hpp>
 #include <engine/graphics/ShapeList.hpp>
-#include <engine/Engine.hpp>
 
 namespace engine
 {
@@ -21,8 +20,6 @@ namespace engine
 			Manager();
 			~Manager();
 
-			void update();
-
 			void clear();
 			void draw(const ShapeList &shapeList, const sf::Transform &transform);
 			void display();
@@ -31,8 +28,13 @@ namespace engine
 
 			static Manager &getInstance();
 
+			static sf::RenderWindow &getWindow() { return window; }
+
+			static const sf::Int16 getWINDOW_WIDTH() { return WINDOW_WIDTH; }
+			static const sf::Int16 getWINDOW_HEIGHT() { return WINDOW_HEIGHT; }
+
 		private:
-			sf::RenderWindow window;
+			static sf::RenderWindow window;
 
 			static const sf::Int16 WINDOW_WIDTH = 800;
 			static const sf::Int16 WINDOW_HEIGHT = 600;

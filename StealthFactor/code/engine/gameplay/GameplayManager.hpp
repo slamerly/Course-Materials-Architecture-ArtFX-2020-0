@@ -3,9 +3,7 @@
 #include <set>
 #include <string>
 #include <SFML/System/Vector2.hpp>
-#include <engine/gameplay/entities/Enemy.hpp>
 #include <engine/gameplay/entities/Player.hpp>
-#include <engine/gameplay/entities/Target.hpp>
 
 namespace engine
 {
@@ -23,6 +21,7 @@ namespace engine
 		public:
 			void update();
 			void draw();
+			void clear();
 
 			void gameOver();
 

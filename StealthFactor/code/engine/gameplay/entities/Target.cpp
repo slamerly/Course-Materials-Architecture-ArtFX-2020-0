@@ -1,5 +1,7 @@
 #include "Target.hpp"
 
+#include <engine/gameplay/GameplayManager.hpp>
+
 namespace engine
 {
 	namespace gameplay

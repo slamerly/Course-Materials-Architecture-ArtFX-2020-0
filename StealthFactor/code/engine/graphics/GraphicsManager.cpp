@@ -21,39 +21,12 @@ namespace engine
 			window.close();
 		}
 
-		void Manager::update()
-		{
-			input::Manager::getInstance().clear();
-
-			sf::Event event;
-			while (window.pollEvent(event))
-			{
-				switch (event.type)
-				{
-				case sf::Event::Closed:
-					Engine::getInstance().exit();
-					break;
-
-				case sf::Event::KeyPressed:
-					input::Manager::getInstance().onKeyPressed(event.key);
-					break;
-
-				case sf::Event::KeyReleased:
-					input::Manager::getInstance().onKeyReleased(event.key);
-					break;
-
-				default:
-					break;
-				}
-			}
-		}
-
 		void Manager::clear()
 		{
 			window.clear(sf::Color::Black);
 
-			sf::View view{ gameplay::Manager::getInstance().getViewCenter(), sf::Vector2f{(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT} };
-			window.setView(view);
+			/*sf::View view{ gameplay::Manager::getInstance().getViewCenter(), sf::Vector2f{(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT} };
+			window.setView(view);*/
 		}
 
 		void Manager::draw(const ShapeList &shapeList, const sf::Transform &transform)

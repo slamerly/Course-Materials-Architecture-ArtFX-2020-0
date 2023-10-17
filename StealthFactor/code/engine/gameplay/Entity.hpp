@@ -2,7 +2,6 @@
 
 #include <engine/graphics/GraphicsManager.hpp>
 #include <engine/physics/PhysicsManager.hpp>
-#include <engine/gameplay/GameplayManager.hpp>
 
 namespace engine
 {
@@ -24,6 +23,7 @@ namespace engine
 			void setRotation(float newRotation);
 
 			const sf::Transform &getTransform() const;
+			const graphics::ShapeList& getShapeList();
 
 		protected:
 			graphics::ShapeList shapeList;

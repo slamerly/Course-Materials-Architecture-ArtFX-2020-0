@@ -14,7 +14,7 @@ namespace engine
 			public:
 				Enemy(const std::string &archetypeName);
 
-				virtual void update() override;
+				virtual void update();
 
 			private:
 				float visionRadius{ 0 };

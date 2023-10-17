@@ -21,10 +21,10 @@ namespace engine
 
 		static Engine &getInstance();
 
-		gameplay::Manager getGameplayM() { return gameplayM; }
-		graphics::Manager getGraphicsM() { return graphicsM; }
-		physics::Manager getPhysicsM() { return physicsM; }
-		input::Manager getInputM() { return inputM; }
+		gameplay::Manager &getGameplayM() { return gameplayM; }
+		graphics::Manager &getGraphicsM() { return graphicsM; }
+		physics::Manager &getPhysicsM() { return physicsM; }
+		input::Manager &getInputM() { return inputM; }
 
 	private:
 		gameplay::Manager gameplayM;

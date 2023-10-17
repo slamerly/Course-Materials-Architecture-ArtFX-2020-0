@@ -14,11 +14,7 @@ namespace engine
 				Target();
 				~Target();
 
-				virtual void update() override;
-
-			private:
-				graphics::ShapeList shapeList;
-				dGeomID collisionGeomId;
+				virtual void update();
 			};
 		}
 	}

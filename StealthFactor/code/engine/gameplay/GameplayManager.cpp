@@ -7,6 +7,8 @@
 #include <vector>
 #include <pugixml/pugixml.hpp>
 #include <engine/Engine.hpp>
+#include <engine/gameplay/entities/Enemy.hpp>
+#include <engine/gameplay/entities/Target.hpp>
 
 
 namespace engine
@@ -37,6 +39,12 @@ namespace engine
 			{
 				entity->draw();
 			}
+		}
+
+		void Manager::clear()
+		{
+			sf::View view{ getInstance().getViewCenter(), sf::Vector2f{(float)graphics::Manager::getWINDOW_WIDTH(), (float)graphics::Manager::getWINDOW_HEIGHT()}};
+			graphics::Manager::getWindow().setView(view);
 		}
 
 		void Manager::gameOver()

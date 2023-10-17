@@ -6,6 +6,7 @@
 #include <pugixml/pugixml.hpp>
 #include <SFML/System.hpp>
 
+
 namespace engine
 {
 	Engine *Engine::instance = nullptr;
@@ -42,13 +43,36 @@ namespace engine
 
 			physics::Manager::getInstance().update();
 			gameplay::Manager::getInstance().update();
-			graphics::Manager::getInstance().update();
 
 			graphics::Manager::getInstance().clear();
 
 			gameplay::Manager::getInstance().draw();
 
 			graphics::Manager::getInstance().display();
+
+			input::Manager::getInstance().clear();
+
+			sf::Event event;
+			while (graphics::Manager::getWindow().pollEvent(event))
+			{
+				switch (event.type)
+				{
+				case sf::Event::Closed:
+					getInstance().exit();
+					break;
+
+				case sf::Event::KeyPressed:
+					input::Manager::getInstance().onKeyPressed(event.key);
+					break;
+
+				case sf::Event::KeyReleased:
+					input::Manager::getInstance().onKeyReleased(event.key);
+					break;
+
+				default:
+					break;
+				}
+			}
 		}
 	}
 

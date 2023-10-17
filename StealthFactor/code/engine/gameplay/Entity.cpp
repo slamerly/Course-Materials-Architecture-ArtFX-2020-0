@@ -6,8 +6,6 @@ namespace engine
 	{
 		Entity::Entity()
 		{
-			collisionGeomId = dCreateBox(physics::Manager::getInstance().getSpaceId(), 0.f, 0.f, 0.f);
-			dGeomSetData(collisionGeomId, this);
 		}
 
 		Entity::~Entity()
@@ -49,6 +47,11 @@ namespace engine
 		const sf::Transform & Entity::getTransform() const
 		{
 			return _transform;
+		}
+
+		const graphics::ShapeList& Entity::getShapeList()
+		{
+			return shapeList;
 		}
 
 		void Entity::updateTransform()

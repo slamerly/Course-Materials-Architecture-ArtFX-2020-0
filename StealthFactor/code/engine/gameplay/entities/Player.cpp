@@ -21,7 +21,7 @@ namespace engine
 			void Player::update()
 			{
 				justMoved = false;
-				auto position = getPosition();
+				sf::Vector2f position = getPosition();
 				float rotation = getRotation();
 
 				if (input::Manager::getInstance().isKeyJustPressed(sf::Keyboard::Left))

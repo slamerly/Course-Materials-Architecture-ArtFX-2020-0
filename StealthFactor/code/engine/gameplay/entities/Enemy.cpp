@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <pugixml/pugixml.hpp>
+#include <engine/gameplay/GameplayManager.hpp>
 
 namespace engine
 {
@@ -12,6 +13,8 @@ namespace engine
 		{
 			Enemy::Enemy(const std::string &archetypeName)
 			{
+				collisionGeomId = dCreateBox(physics::Manager::getInstance().getSpaceId(), 0.f, 0.f, 0.f);
+				dGeomSetData(collisionGeomId, this);
 				loadArchetype(archetypeName);
 			}
 
