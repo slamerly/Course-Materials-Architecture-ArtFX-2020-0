@@ -1,29 +1,29 @@
 #pragma once
 
-#include <ode/collision.h>
-#include <engine/graphics/ShapeList.hpp>
+#include <engine/graphics/ShapeListObserver.h>
 #include <engine/gameplay/Entity.hpp>
+#include <engine/physics/CollisionVolumeId.h>
 
 namespace engine
 {
-	namespace gameplay
-	{
-		namespace entities
-		{
-			class Character : public Entity
-			{
-			public:
-				Character();
-				virtual ~Character();
+    namespace gameplay
+    {
+        namespace entities
+        {
+            class Character : public Entity
+            {
+            public:
+                Character(EntityContext& context);
+                virtual ~Character();
 
-				virtual void draw() override;
+                void propagateTransform();
 
-			protected:
-				graphics::ShapeList shapeList;
-				dGeomID collisionGeomId;
+            protected:
+                graphics::ShapeListId _shapeListId;
+                physics::CollisionVolumeId _collisionVolumeId;
 
-				bool isWalking{ false };
-			};
-		}
-	}
+                bool _isWalking{ false };
+            };
+        }
+    }
 }

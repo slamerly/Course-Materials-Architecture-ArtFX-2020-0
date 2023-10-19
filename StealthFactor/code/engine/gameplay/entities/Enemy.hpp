@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <engine/gameplay/Entity.hpp>
+#include <engine/gameplay/entities/Character.hpp>
 
 namespace engine
 {
@@ -9,10 +9,10 @@ namespace engine
 	{
 		namespace entities
 		{
-			class Enemy : public Entity
+			class Enemy : public Character
 			{
 			public:
-				Enemy(const std::string &archetypeName);
+				Enemy(EntityContext &contextp, const std::string &archetypeName);
 
 				virtual void update();
 

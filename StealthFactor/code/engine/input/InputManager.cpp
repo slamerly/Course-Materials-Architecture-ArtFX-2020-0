@@ -8,7 +8,7 @@ namespace engine
 	{
 		bool InputManager::isKeyPressed(sf::Keyboard::Key key) const
 		{
-			if (!hasFocus)
+			if (!active)
 				return false;
 
 			return sf::Keyboard::isKeyPressed(key);
@@ -16,7 +16,7 @@ namespace engine
 
 		bool InputManager::isKeyJustPressed(sf::Keyboard::Key key) const
 		{
-			if (!hasFocus)
+			if (!active)
 				return false;
 
 			return justPressedKeys.find(key) != std::end(justPressedKeys);
@@ -24,18 +24,10 @@ namespace engine
 
 		bool InputManager::isKeyJustReleased(sf::Keyboard::Key key) const
 		{
-			if (!hasFocus)
+			if (!active)
 				return false;
 
 			return justReleasedKeys.find(key) != std::end(justReleasedKeys);
-		}
-
-		void InputManager::initialize()
-		{
-		}
-
-		void InputManager::update()
-		{
 		}
 
 		void InputManager::clear()
@@ -54,10 +46,9 @@ namespace engine
 			justReleasedKeys.insert(event.code);
 		}
 
-		void InputManager::addObserver(IManager obs)
+		void InputManager::setActive(bool activep)
 		{
-			observers.push_back(obs);
+			active = activep;
 		}
-		// PROBLEM HERE
 	}
 }

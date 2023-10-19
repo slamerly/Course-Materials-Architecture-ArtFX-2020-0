@@ -1,10 +1,14 @@
 #include "engine/graphics/GraphicsManager.hpp"
+#include <SFML/Window/Event.hpp>
+#include <engine/graphics/ViewProvider.h>
 
 namespace engine
 {
 	namespace graphics
 	{
-		GraphicsManager::GraphicsManager()
+		GraphicsManager::GraphicsManager(ViewProvider& viewprovider_, EventListener& eventListener_) :
+			center{ viewprovider_ },
+			listener{ eventListener_ }
 		{
 			window.create(sf::VideoMode{ (unsigned int)WINDOW_WIDTH, (unsigned int)WINDOW_HEIGHT }, "Stealth Factor");
 
@@ -12,6 +16,7 @@ namespace engine
 
 			sf::View view(sf::Vector2f{ 0.f, 0.f }, sf::Vector2f{ (float)WINDOW_WIDTH, (float)WINDOW_HEIGHT });
 			window.setView(view);
+			
 		}
 
 		GraphicsManager::~GraphicsManager()
@@ -19,40 +24,85 @@ namespace engine
 			window.close();
 		}
 
-		void GraphicsManager::initialize()
+		void GraphicsManager::draw()
 		{
-			// Initialisation
+			window.clear(sf::Color::Black);
+
+			sf::View view{ center.getViewCenter(),sf::Vector2f((float)WINDOW_WIDTH, (float)WINDOW_HEIGHT) };
+			window.setView(view);
+
+
+			for (auto &instance : _shapeListInstances)
+			{
+				sf::RenderStates renderStates{ instance->transform };
+
+				for (auto& shape : instance->shapeList.getShapes())
+				{
+					window.draw(*shape, renderStates);
+				}
+			}
+
+			window.display();
 		}
 
-		void GraphicsManager::update()
+		bool GraphicsManager::setUp()
 		{
+			window.create(sf::VideoMode{ (unsigned int)WINDOW_WIDTH, (unsigned int)WINDOW_HEIGHT }, "Stealth Factor");
+
+			if (!window.isOpen())
+			{
+				return false;
+			}
+
+			window.setVerticalSyncEnabled(true);
+
+			return true;
 		}
 
 		void GraphicsManager::clear()
 		{
-			window.clear(sf::Color::Black);
+			assert(_shapeListInstances.size() == 0);
 
-			/*sf::View view{ gameplay::GraphicsManager::getInstance().getViewCenter(), sf::Vector2f{(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT} };
-			window.setView(view);*/
+			window.close();
 		}
 
-		void GraphicsManager::draw(const ShapeList &shapeList, const sf::Transform &transform)
+		void GraphicsManager::pollEvent()
 		{
-			sf::RenderStates renderStates{ transform };
-			for (auto shape : shapeList.getShapes())
+			sf::Event event;
+			while (window.pollEvent(event))
 			{
-				window.draw(*shape, renderStates);
+				listener.onEvent(event);
 			}
 		}
 
-		void GraphicsManager::display()
+		ShapeListId GraphicsManager::createShapeListInstance(const std::string& name)
 		{
-			window.display();
+			auto instance{ new ShapeListInstance() };
+			ShapeListInstancePtr instanceUPtr{ instance };
+
+			if (!instance->shapeList.load(name))
+			{
+				return nullptr;
+			}
+
+			_shapeListInstances.insert(std::move(instanceUPtr));
+			return instance;
 		}
 
-		bool GraphicsManager::hasFocus() const
+		void GraphicsManager::destroyShapeListInstance(ShapeListId id)
 		{
-			return hasFocus();
+			auto it = std::find_if(std::begin(_shapeListInstances), std::end(_shapeListInstances), [id](const ShapeListInstancePtr& instance)
+				{
+					return instance.get() == id;
+				});
+			assert(it != std::end(_shapeListInstances));
+			_shapeListInstances.erase(it);
+		}
+
+		void GraphicsManager::setShapeListInstanceTransform(ShapeListId id, const sf::Transform& transform)
+		{
+			ShapeListInstance* instance = id;
+			instance->transform = transform;
 		}
 	}
 }

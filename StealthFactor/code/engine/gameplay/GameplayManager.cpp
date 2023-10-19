@@ -8,8 +8,8 @@
 #include <pugixml/pugixml.hpp>
 #include <engine/Engine.hpp>
 #include <engine/gameplay/entities/Enemy.hpp>
+#include <engine/gameplay/entities/Player.hpp>
 #include <engine/gameplay/entities/Target.hpp>
-
 
 namespace engine
 {
@@ -17,65 +17,38 @@ namespace engine
 	{
 		const float GameplayManager::CELL_SIZE = 50.f;
 
-		GameplayManager::GameplayManager()
+		GameplayManager::GameplayManager(graphics::GraphicsManager& graphicsManager, input::InputManager& inputManager, physics::PhysicsManager& physicsManager)
+			: _context{ graphicsManager, inputManager, physicsManager, *this }
 		{
 		}
 
-		void GameplayManager::initialize()
+		void GameplayManager::setUp()
 		{
+		}
+
+		void GameplayManager::clear()
+		{
+			removeEntities();
 		}
 
 		void GameplayManager::update()
 		{
-			for (auto entity : entities)
+			for (auto& entity : _entities)
 			{
 				entity->update();
 			}
 
-			preventMapCompletion = false;
-			if (nextMapRequested && !nextMapName.empty())
+			_preventMapCompletion = false;
+			if (_nextMapRequested && !_nextMapName.empty())
 			{
-				nextMapRequested = false;
-				loadMap(nextMapName);
+				_nextMapRequested = false;
+				loadMap(_nextMapName);
 			}
 		}
 
-		/*void GameplayManager::draw()
+		void GameplayManager::loadMap(const std::string& mapName)
 		{
-			for (auto entity : entities)
-			{
-				entity->draw();
-			}
-		}*/
-
-		void GameplayManager::clear()
-		{
-			// Logique de nettoyage du gestionnaire de gameplay.
-			for (auto entity : entities)
-			{
-				delete entity;
-			}
-			entities.clear();
-		}
-
-		void GameplayManager::gameOver()
-		{
-			std::cout << "Game over" << std::endl;
-			loadMap(currentMapName);
-		}
-
-		sf::Vector2f GameplayManager::getViewCenter() const
-		{
-			return sf::Vector2f{ columns * (CELL_SIZE / 2.f), rows * (CELL_SIZE / 2.f) };
-		}
-
-		void GameplayManager::loadMap(const std::string & mapName)
-		{
-			for (auto entity : entities)
-			{
-				delete entity;
-			}
-			entities.clear();
+			removeEntities();
 
 			std::stringstream filename;
 			filename << "maps/" << mapName << ".xml";
@@ -88,66 +61,71 @@ namespace engine
 				assert(!doc.empty());
 				auto xmlMap = doc.first_child();
 
-				rows = std::stoi(xmlMap.child_value("rows"));
-				assert(rows >= 0);
+				_rows = std::stoi(xmlMap.child_value("rows"));
+				assert(_rows >= 0);
 
-				columns = std::stoi(xmlMap.child_value("columns"));
-				assert(columns >= 0);
+				_columns = std::stoi(xmlMap.child_value("columns"));
+				assert(_columns >= 0);
 
-				for (auto &xmlElement : xmlMap.child("elements").children())
+				for (auto& xmlElement : xmlMap.child("elements").children())
 				{
 					if (!std::strcmp(xmlElement.name(), "enemy"))
 					{
 						int row = std::stoi(xmlElement.child_value("row"));
-						assert(row >= 0 && row < rows);
+						assert(row >= 0 && row < _rows);
 
 						int column = std::stoi(xmlElement.child_value("column"));
-						assert(column >= 0 && column < columns);
+						assert(column >= 0 && column < _columns);
 
 						std::string archetypeName = xmlElement.child_value("archetype");
 
-						auto entity = new entities::Enemy{ archetypeName };
+						auto enemyEntity{ new entities::Enemy{ _context, archetypeName } };
+						EntityPtr entity{ enemyEntity };
 						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
+						enemyEntity->propagateTransform();
 
-						entities.insert(entity);
+						_entities.insert(std::move(entity));
 					}
 
 					if (!std::strcmp(xmlElement.name(), "player"))
 					{
 						int row = std::stoi(xmlElement.child_value("row"));
-						assert(row >= 0 && row < rows);
+						assert(row >= 0 && row < _rows);
 
 						int column = std::stoi(xmlElement.child_value("column"));
-						assert(column >= 0 && column < columns);
+						assert(column >= 0 && column < _columns);
 
-						auto entity = new entities::Player{};
+						_playerEntity = new entities::Player{ _context };
+						EntityPtr entity{ _playerEntity };
 						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
+						_playerEntity->propagateTransform();
 
-						entities.insert(entity);
-						playerEntity = entity;
+						_entities.insert(std::move(entity));
 					}
 
 					if (!std::strcmp(xmlElement.name(), "target"))
 					{
 						int row = std::stoi(xmlElement.child_value("row"));
-						assert(row >= 0 && row < rows);
+						assert(row >= 0 && row < _rows);
 
 						int column = std::stoi(xmlElement.child_value("column"));
-						assert(column >= 0 && column < columns);
+						assert(column >= 0 && column < _columns);
 
-						auto entity = new entities::Target{};
+						auto targetEntity = new entities::Target{ _context };
+						EntityPtr entity{ targetEntity };
 						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
+						targetEntity->propagateTransform();
 
-						entities.insert(entity);
+						_entities.insert(std::move(entity));
 					}
 				}
 
-				currentMapName = mapName;
-				nextMapName = xmlMap.child_value("next_map");
+				_currentMapName = mapName;
+				_nextMapName = xmlMap.child_value("next_map");
 
 				// JIRA-1337: Map is skipped.
 				// This prevents the map to be completed during the first frame. I don't know why this happens.
-				preventMapCompletion = true;
+				_preventMapCompletion = true;
 			}
 			else
 			{
@@ -157,27 +135,35 @@ namespace engine
 			}
 		}
 
+		void GameplayManager::gameOver()
+		{
+			std::cout << "Game over" << std::endl;
+			loadMap(_currentMapName);
+		}
+
 		void GameplayManager::loadNextMap()
 		{
-			if (!preventMapCompletion)
+			if (!_preventMapCompletion)
 			{
-				nextMapRequested = true;
+				_nextMapRequested = true;
 			}
 		}
 
-		const entities::Player &GameplayManager::getPlayer() const
+		const entities::Player& GameplayManager::getPlayer() const
 		{
-			assert(playerEntity);
-			return *playerEntity;
+			assert(_playerEntity);
+			return *_playerEntity;
+		}
+
+		sf::Vector2f GameplayManager::getViewCenter() const
+		{
+			return sf::Vector2f{ _columns * (CELL_SIZE / 2.f), _rows * (CELL_SIZE / 2.f) };
+		}
+
+		void GameplayManager::removeEntities()
+		{
+			_entities.clear();
+			_playerEntity = nullptr;
 		}
 	}
 }
-
-
-
-
-/*void GameplayManager::clear()
-{
-	sf::View view{ getInstance().getViewCenter(), sf::Vector2f{(float)graphics::GameplayManager::getWINDOW_WIDTH(), (float)graphics::GameplayManager::getWINDOW_HEIGHT()} };
-	graphics::GameplayManager::getWindow().setView(view);
-}*/

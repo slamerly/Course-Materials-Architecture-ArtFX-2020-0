@@ -2,47 +2,58 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <cassert>
+#include <set>
+#include <memory>
 #include <SFML/Graphics/Shape.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Transform.hpp>
-#include <SFML/Window/Event.hpp>
 #include <engine/graphics/ShapeList.hpp>
-#include <engine/IManager.hpp>
+#include <engine/graphics/ShapeListObserver.h>
+#include <engine/EventListener.h>
 
 namespace engine
 {
+	class EventListener;
+
 	namespace graphics
 	{
 		class ShapeList;
+		class ViewProvider;
 
-		class GraphicsManager : public IManager
+		struct ShapeListObserver;
+
+		class GraphicsManager
 		{
 		public:
 
-			GraphicsManager();
+			GraphicsManager(ViewProvider &viewprovider_, EventListener &eventListener_);
 			~GraphicsManager();
 
-			void initialize() override;
-			void update() override;
-			void clear() override;
-
 			//void clear();
-			void draw(const ShapeList &shapeList, const sf::Transform &transform);
-			void display();
+			void draw();
 
-			static sf::RenderWindow &getWindow() { return window; }
+			bool setUp();
+			void clear();
 
-			static const sf::Int16 getWINDOW_WIDTH() { return WINDOW_WIDTH; }
-			static const sf::Int16 getWINDOW_HEIGHT() { return WINDOW_HEIGHT; }
+			void pollEvent();
 
-			bool hasFocus() const;
+			ShapeListId createShapeListInstance(const std::string& name);
+
+			void destroyShapeListInstance(ShapeListId id);
+			void setShapeListInstanceTransform(ShapeListId id, const sf::Transform& transform);
 
 		private:
 
-			static sf::RenderWindow window;
+			sf::RenderWindow window;
+			using ShapeListInstancePtr = std::unique_ptr<ShapeListInstance>;
+
+			ViewProvider &center;
+			EventListener &listener;
 
 			static const sf::Int16 WINDOW_WIDTH = 800;
 			static const sf::Int16 WINDOW_HEIGHT = 600;
+
+			std::set<ShapeListInstancePtr> _shapeListInstances;
 
 		};
 	}

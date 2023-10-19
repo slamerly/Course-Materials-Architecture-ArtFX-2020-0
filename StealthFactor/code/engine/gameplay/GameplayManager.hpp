@@ -1,55 +1,63 @@
 #pragma once
 
+#include <memory>
 #include <set>
 #include <string>
 #include <SFML/System/Vector2.hpp>
-#include <engine/gameplay/entities/Player.hpp>
-#include <engine/IManager.hpp>
+#include <engine/graphics/ViewProvider.h>
+#include <engine/gameplay/Entity.hpp>
+#include <engine/gameplay/EntityContext.h>
+#include <engine/gameplay/EntityListener.h>
 
 namespace engine
 {
-	namespace gameplay
-	{
-		class Entity;
+    namespace gameplay
+    {
+        namespace entities
+        {
+            class Player;
+        }
 
-		namespace entities
-		{
-			class Player;
-		}
-
-        class GameplayManager : public IManager
+        class GameplayManager : public graphics::ViewProvider, public EntityListener
         {
         public:
+            GameplayManager(graphics::GraphicsManager& graphicsManager, input::InputManager& inputManager, physics::PhysicsManager& physicsManager);
 
-            GameplayManager();
+            void setUp();
+            void clear();
 
-            void initialize() override;
-            void update() override;
-            void clear() override;
-
-            void gameOver();
-
-            sf::Vector2f getViewCenter() const;
+            void update();
 
             void loadMap(const std::string& mapName);
-            void loadNextMap();
 
-            const entities::Player& getPlayer() const;
+            // EntityListener
+            void gameOver() override;
+            void loadNextMap() override;
+            const entities::Player& getPlayer() const override;
+
+            // ViewProvider
+            sf::Vector2f getViewCenter() const override;
 
             static const float CELL_SIZE;
 
         private:
+            using EntityPtr = std::unique_ptr<Entity>;
 
-            std::set<Entity*> entities;
-            entities::Player* playerEntity{};
+            EntityContext _context;
 
-            std::string currentMapName;
-            std::string nextMapName;
-            int rows{ 0 };
-            int columns{ 0 };
+            std::set<EntityPtr> _entities;
+            entities::Player* _playerEntity{};
 
-            bool preventMapCompletion{ false };
-            bool nextMapRequested{ false };
+            // Map
+            std::string _currentMapName;
+            std::string _nextMapName;
+            int _rows{ 0 };
+            int _columns{ 0 };
+
+            bool _preventMapCompletion{ false };
+            bool _nextMapRequested{ false };
+
+            void removeEntities();
         };
-	}
+    }
 }

@@ -4,23 +4,9 @@ namespace engine
 {
 	namespace gameplay
 	{
-		Entity::Entity()
+		Entity::Entity(EntityContext& contextp) :
+			context{ contextp }
 		{
-			graphicsManager = graphics::GraphicsManager();
-		}
-
-		Entity::~Entity()
-		{
-			dGeomDestroy(collisionGeomId);
-		}
-
-		void Entity::update()
-		{
-		}
-
-		void Entity::draw()
-		{
-			graphicsManager.draw(shapeList, getTransform());
 		}
 
 		const sf::Vector2f & Entity::getPosition() const
@@ -48,11 +34,6 @@ namespace engine
 		const sf::Transform & Entity::getTransform() const
 		{
 			return _transform;
-		}
-
-		const graphics::ShapeList& Entity::getShapeList()
-		{
-			return shapeList;
 		}
 
 		void Entity::updateTransform()

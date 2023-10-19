@@ -1,20 +1,20 @@
 #pragma once
-#include <engine/graphics/GraphicsManager.hpp>
-#include <engine/physics/PhysicsManager.hpp>
+#include <SFML/Graphics/Transform.hpp>
 
 namespace engine
 {
 	namespace gameplay
 	{
+		struct EntityContext;
+
 		class Entity
 		{
 		public:
 
-			Entity();
-			virtual ~Entity();
+			Entity(EntityContext &contextp);
+			virtual ~Entity() = default;
 
-			virtual void update();
-			virtual void draw();
+			virtual void update() = 0;
 
 			const sf::Vector2f &getPosition() const;
 			void setPosition(const sf::Vector2f &newPosition);
@@ -23,20 +23,16 @@ namespace engine
 			void setRotation(float newRotation);
 
 			const sf::Transform &getTransform() const;
-			const graphics::ShapeList& getShapeList();
 
 		protected:
 
-			graphics::ShapeList shapeList;
-			dGeomID collisionGeomId;
+			EntityContext& context;
 
 		private:
 
 			sf::Vector2f _position{};
 			float _rotation{ 0.f };
 			sf::Transform _transform;
-
-			graphics::GraphicsManager graphicsManager;
 
 			void updateTransform();
 		};

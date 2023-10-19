@@ -1,7 +1,16 @@
 #include "engine/gameplay/entities/Player.hpp"
+
+#include <cassert>
+#include <ode/collision.h>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Shape.hpp>
+#include <SFML/Graphics/CircleShape.hpp>
+#include <engine/input/InputManager.hpp>
+#include <engine/physics/PhysicsManager.hpp>
+#include <engine/gameplay/EntityContext.h>
 #include <engine/gameplay/GameplayManager.hpp>
 #include <engine/gameplay/entities/Target.hpp>
-#include <engine/input/InputManager.hpp>
+#include <engine/Engine.hpp>
 
 namespace engine
 {
@@ -9,45 +18,41 @@ namespace engine
 	{
 		namespace entities
 		{
-			physics::PhysicsManager physicsManager = physics::PhysicsManager();
-			gameplay::GameplayManager gameplayManager = gameplay::GameplayManager();
-			input::InputManager inputManager = input::InputManager();
-
-			Player::Player()
+			Player::Player(EntityContext& context)
+				: Character{ context }
 			{
-				shapeList.load("player");
-				collisionGeomId = dCreateBox(physicsManager.getSpaceId(), gameplay::GameplayManager::CELL_SIZE * 0.9f, gameplay::GameplayManager::CELL_SIZE * 0.9f, 1.f);
-				dGeomSetData(collisionGeomId, this);
+				_shapeListId = context.graphicsManager.createShapeListInstance("player");
+				assert(_shapeListId);
 			}
 
 			void Player::update()
 			{
 				justMoved = false;
-				sf::Vector2f position = getPosition();
+				auto position = getPosition();
 				float rotation = getRotation();
 
-				if (inputManager.isKeyJustPressed(sf::Keyboard::Left))
+				if (context.inputManager.isKeyJustPressed(sf::Keyboard::Left))
 				{
 					justMoved = true;
 					position.x -= gameplay::GameplayManager::CELL_SIZE;
 					rotation = 180.f;
 				}
 
-				if (inputManager.isKeyJustPressed(sf::Keyboard::Right))
+				if (context.inputManager.isKeyJustPressed(sf::Keyboard::Right))
 				{
 					justMoved = true;
 					position.x += gameplay::GameplayManager::CELL_SIZE;
 					rotation = 0.f;
 				}
 
-				if (inputManager.isKeyJustPressed(sf::Keyboard::Up))
+				if (context.inputManager.isKeyJustPressed(sf::Keyboard::Up))
 				{
 					justMoved = true;
 					position.y -= gameplay::GameplayManager::CELL_SIZE;
 					rotation = -90.f;
 				}
 
-				if (inputManager.isKeyJustPressed(sf::Keyboard::Down))
+				if (context.inputManager.isKeyJustPressed(sf::Keyboard::Down))
 				{
 					justMoved = true;
 					position.y += gameplay::GameplayManager::CELL_SIZE;
@@ -58,18 +63,16 @@ namespace engine
 				{
 					setPosition(position);
 					setRotation(rotation);
-
-					dGeomSetPosition(collisionGeomId, position.x, position.y, 0);
+					propagateTransform();
 				}
-				
-				auto collisions = physicsManager.getCollisionsWith(collisionGeomId);
-				for (auto &geomId : collisions)
+
+				auto collisions = context.physicsManager.getCollisionsWith(_collisionVolumeId);
+				for (auto& entity : collisions)
 				{
-					auto entity = reinterpret_cast<Entity *>(dGeomGetData(geomId));
-					auto targetEntity = dynamic_cast<entities::Target *>(entity);
+					auto targetEntity = dynamic_cast<entities::Target*>(entity);
 					if (targetEntity)
 					{
-						gameplayManager.loadNextMap();
+						context.entityListener.loadNextMap();
 					}
 				}
 			}

@@ -3,21 +3,16 @@
 #include <SFML/Window/Event.hpp>
 #include <set>
 #include <vector>
-#include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
-#include <engine/IManager.hpp>
 
 namespace engine
 {
 	namespace input
 	{
-		class InputManager : public IManager
+		class InputManager
 		{
 		public:
-
-			void initialize() override;
-			void update() override;
-			void clear() override;
+			void clear();
 
 			// True during all frames while the key is pressed.
 			bool isKeyPressed(sf::Keyboard::Key key) const;
@@ -32,16 +27,14 @@ namespace engine
 			void onKeyPressed(const sf::Event::KeyEvent &event);
 			void onKeyReleased(const sf::Event::KeyEvent &event);
 
-			void addObserver(IManager obs);
+			void setActive(bool activep);
 
 		private:
 
 			std::set<sf::Keyboard::Key> justPressedKeys;
 			std::set<sf::Keyboard::Key> justReleasedKeys;
 
-			std::vector<IManager> observers;
-
-			bool hasFocus;
+			bool active{ true };
 		};
 	}
 }

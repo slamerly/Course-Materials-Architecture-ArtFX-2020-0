@@ -8,9 +8,13 @@
 
 namespace engine
 {
-	Engine *Engine::instance = nullptr;
+	Engine::Engine() :
+		gameplayM{ graphicsM, inputM, physicsM},
+		graphicsM{ gameplayM, *this}
+	{
+	}
 
-	void Engine::loadConfiguration()
+	bool Engine::loadConfiguration()
 	{
 		pugi::xml_document doc;
 		pugi::xml_parse_result result = doc.load_file("configuration.xml");
@@ -20,13 +24,41 @@ namespace engine
 			assert(!doc.empty());
 			auto configuration = doc.first_child();
 			startMap = configuration.child_value("start_map");
+
+			return true;
 		}
 		else
 		{
 			std::cerr << "Configuration parsed with errors." << std::endl;
 			std::cerr << "Error description: " << result.description() << std::endl;
 			std::cerr << "Error offset: " << result.offset << std::endl;
+
+			return false;
 		}
+	}
+
+	bool Engine::setUp()
+	{
+		if (!graphicsM.setUp())
+		{
+			return false;
+		}
+
+		if (!physicsM.setUp())
+		{
+			return false;
+		}
+
+		gameplayM.setUp();
+
+		return true;
+	}
+
+	void Engine::clear()
+	{
+		gameplayM.clear();
+		physicsM.clear();
+		graphicsM.clear();
 	}
 
 	void Engine::run()
@@ -40,38 +72,13 @@ namespace engine
 		{
 			deltaTime = clock.restart().asSeconds();
 
-			physicsM.update();
-			gameplayM.update();
-
-			graphicsM.clear();
-
-			//graphicsM.draw();
-
-			graphicsM.display();
-
 			inputM.clear();
 
-			sf::Event event;
-			while (graphicsM.getWindow().pollEvent(event))
-			{
-				switch (event.type)
-				{
-				case sf::Event::Closed:
-					getInstance().exit();
-					break;
+			physicsM.update();
+			graphicsM.pollEvent();
+			gameplayM.update();
 
-				case sf::Event::KeyPressed:
-					inputM.onKeyPressed(event.key);
-					break;
-
-				case sf::Event::KeyReleased:
-					inputM.onKeyReleased(event.key);
-					break;
-
-				default:
-					break;
-				}
-			}
+			graphicsM.draw();
 		}
 	}
 
@@ -85,11 +92,32 @@ namespace engine
 		running = false;
 	}
 
-	Engine &Engine::getInstance()
+	void Engine::onEvent(const sf::Event& event)
 	{
-		if (!instance)
-			instance = new Engine();
+		switch (event.type)
+		{
+		case sf::Event::Closed:
+			running = false;
+			break;
 
-		return *instance;
+		case sf::Event::LostFocus:
+			inputM.setActive(false);
+			break;
+
+		case sf::Event::GainedFocus:
+			inputM.setActive(true);
+			break;
+
+		case sf::Event::KeyPressed:
+			inputM.onKeyPressed(event.key);
+			break;
+
+		case sf::Event::KeyReleased:
+			inputM.onKeyReleased(event.key);
+			break;
+
+		default:
+			break;
+		}
 	}
 }

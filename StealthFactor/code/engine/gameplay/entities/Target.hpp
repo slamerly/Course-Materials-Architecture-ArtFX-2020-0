@@ -1,6 +1,9 @@
 #pragma once
+
+#include <engine/graphics/ShapeListObserver.h>
 #include <engine/gameplay/Entity.hpp>
-#include <engine/physics/PhysicsManager.hpp>
+#include <engine/physics/CollisionVolumeId.h>
+#include <ode/collision.h>
 
 namespace engine
 {
@@ -11,10 +14,16 @@ namespace engine
 			class Target : public Entity
 			{
 			public:
-				Target();
+				Target(EntityContext &contextp);
 				~Target();
 
-				virtual void update();
+				virtual void update() override;
+
+				void propagateTransform();
+
+			private:
+				graphics::ShapeListId shapeListId;
+				physics::CollisionVolumeId collisionVolumeId;
 			};
 		}
 	}

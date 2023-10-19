@@ -1,31 +1,47 @@
+#include <engine/physics/CollisionVolumeId.h>
+#include <engine/graphics/ShapeListObserver.h>
 #include "Target.hpp"
+
+#include <cassert>
+#include <engine/gameplay/EntityContext.h>
 #include <engine/gameplay/GameplayManager.hpp>
+#include <engine/graphics/GraphicsManager.hpp>
+#include <engine/physics/PhysicsManager.hpp>
 
 namespace engine
 {
-	namespace gameplay
-	{
-		namespace entities
-		{
-			Target::Target()
-			{
-				shapeList.load("target");
-				physics::PhysicsManager physicsManager = physics::PhysicsManager();
+    namespace gameplay
+    {
+        namespace entities
+        {
+            Target::Target(EntityContext& context)
+                : Entity{ context }
+            {
+                shapeListId = context.graphicsManager.createShapeListInstance("target");
+                assert(shapeListId);
 
-				collisionGeomId = dCreateBox(physicsManager.getSpaceId(), gameplay::GameplayManager::CELL_SIZE * 0.9f, gameplay::GameplayManager::CELL_SIZE * 0.9f, 1.f);
-				dGeomSetData(collisionGeomId, this);
-			}
+                collisionVolumeId = context.physicsManager.createCollisionBox(this, gameplay::GameplayManager::CELL_SIZE * 0.9f, gameplay::GameplayManager::CELL_SIZE * 0.9f);
+                assert(collisionVolumeId);
+            }
 
-			Target::~Target()
-			{
-				dGeomDestroy(collisionGeomId);
-			}
+            Target::~Target()
+            {
+                context.graphicsManager.destroyShapeListInstance(shapeListId);
+                context.physicsManager.destroyCollisionVolume(collisionVolumeId);
+            }
 
-			void Target::update()
-			{
-				auto &position = getPosition();
-				dGeomSetPosition(collisionGeomId, position.x, position.y, 0);
-			}
-		}
-	}
+            void Target::update()
+            {
+                propagateTransform();
+            }
+
+            void Target::propagateTransform()
+            {
+                context.graphicsManager.setShapeListInstanceTransform(shapeListId, getTransform());
+
+                auto& position = getPosition();
+                dGeomSetPosition(collisionVolumeId, position.x, position.y, 0);
+            }
+        }
+    }
 }

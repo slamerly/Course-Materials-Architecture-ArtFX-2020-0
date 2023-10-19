@@ -3,6 +3,8 @@
 #include <sstream>
 #include <pugixml/pugixml.hpp>
 #include <engine/gameplay/GameplayManager.hpp>
+#include <engine/graphics/GraphicsManager.hpp>
+#include <engine/gameplay/entities/Player.hpp>
 
 namespace engine
 {
@@ -10,19 +12,16 @@ namespace engine
 	{
 		namespace entities
 		{
-			physics::PhysicsManager physicsManager = physics::PhysicsManager();
-			gameplay::GameplayManager gameplayManager = gameplay::GameplayManager();
 
-			Enemy::Enemy(const std::string &archetypeName)
+			Enemy::Enemy(EntityContext& contextp, const std::string& archetypeName) :
+				Character { contextp }
 			{
-				collisionGeomId = dCreateBox(physicsManager.getSpaceId(), 0.f, 0.f, 0.f);
-				dGeomSetData(collisionGeomId, this);
 				loadArchetype(archetypeName);
 			}
 
 			void Enemy::update()
 			{
-				auto &player = gameplayManager.getPlayer();
+				auto &player = context.entityListener.getPlayer();
 				if (player.hasJustMoved())
 				{
 					auto &playerPosition = player.getPosition();
@@ -39,7 +38,7 @@ namespace engine
 						}
 						else
 						{
-							gameplayManager.gameOver();
+							context.entityListener.gameOver();
 						}
 					}
 					else
@@ -63,7 +62,8 @@ namespace engine
 					auto xmlArchetype = doc.first_child();
 
 					std::string shapeListName = xmlArchetype.child_value("shapelist");
-					assert(shapeList.load(shapeListName));
+					_shapeListId = context.graphicsManager.createShapeListInstance(shapeListName);
+					assert(_shapeListId);
 
 					visionRadius = std::stof(xmlArchetype.child_value("vision_radius"));
 					assert(visionRadius > 0.f);

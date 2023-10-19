@@ -1,5 +1,5 @@
 #pragma once
-#include <engine/gameplay/Entity.hpp>
+#include <engine/gameplay/entities/Character.hpp>
 
 namespace engine
 {
@@ -7,10 +7,10 @@ namespace engine
 	{
 		namespace entities
 		{
-			class Player : public Entity
+			class Player : public Character
 			{
 			public:
-				Player();
+				Player(EntityContext &contextp);
 
 				virtual void update();
 

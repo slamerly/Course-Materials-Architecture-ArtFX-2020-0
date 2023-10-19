@@ -4,27 +4,26 @@
 #include <engine/graphics/GraphicsManager.hpp>
 #include <engine/physics/PhysicsManager.hpp>
 #include <engine/input/InputManager.hpp>
-#include <engine/IManager.hpp >
+#include <engine/EventListener.h>
 
 namespace engine
 {
-	class Engine
+	class Engine : public EventListener
 	{
 	public:
+		Engine();
 
-		void loadConfiguration();
+		bool loadConfiguration();
+
+		bool setUp();
+		void clear();
 
 		void run();
 		float getDeltaTime() const;
 
 		void exit();
 
-		static Engine &getInstance();
-
-		gameplay::GameplayManager &getGameplayM() { return gameplayM; }
-		graphics::GraphicsManager &getGraphicsM() { return graphicsM; }
-		physics::PhysicsManager &getPhysicsM() { return physicsM; }
-		input::InputManager &getInputM() { return inputM; }
+		void onEvent(const sf::Event& event) override;
 
 	private:
 
@@ -38,7 +37,5 @@ namespace engine
 
 		// Configuration
 		std::string startMap;
-
-		static Engine *instance;
 	};
 }
