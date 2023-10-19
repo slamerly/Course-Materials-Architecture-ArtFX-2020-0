@@ -6,6 +6,7 @@ namespace engine
 	{
 		Entity::Entity()
 		{
+			graphicsManager = graphics::GraphicsManager();
 		}
 
 		Entity::~Entity()
@@ -19,7 +20,6 @@ namespace engine
 
 		void Entity::draw()
 		{
-			graphics::GraphicsManager graphicsManager = graphics::GraphicsManager();
 			graphicsManager.draw(shapeList, getTransform());
 		}
 

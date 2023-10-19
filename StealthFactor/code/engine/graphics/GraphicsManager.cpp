@@ -49,5 +49,10 @@ namespace engine
 		{
 			window.display();
 		}
+
+		bool GraphicsManager::hasFocus() const
+		{
+			return hasFocus();
+		}
 	}
 }

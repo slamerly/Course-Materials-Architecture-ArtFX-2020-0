@@ -35,6 +35,8 @@ namespace engine
 			static const sf::Int16 getWINDOW_WIDTH() { return WINDOW_WIDTH; }
 			static const sf::Int16 getWINDOW_HEIGHT() { return WINDOW_HEIGHT; }
 
+			bool hasFocus() const;
+
 		private:
 
 			static sf::RenderWindow window;

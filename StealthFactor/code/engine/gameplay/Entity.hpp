@@ -36,6 +36,8 @@ namespace engine
 			float _rotation{ 0.f };
 			sf::Transform _transform;
 
+			graphics::GraphicsManager graphicsManager;
+
 			void updateTransform();
 		};
 	}

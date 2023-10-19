@@ -2,6 +2,7 @@
 #include <set>
 #include <SFML/Window/Event.hpp>
 #include <set>
+#include <vector>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <engine/IManager.hpp>
@@ -31,12 +32,16 @@ namespace engine
 			void onKeyPressed(const sf::Event::KeyEvent &event);
 			void onKeyReleased(const sf::Event::KeyEvent &event);
 
-			bool hasFocus() const;
+			void addObserver(IManager obs);
 
 		private:
 
 			std::set<sf::Keyboard::Key> justPressedKeys;
 			std::set<sf::Keyboard::Key> justReleasedKeys;
+
+			std::vector<IManager> observers;
+
+			bool hasFocus;
 		};
 	}
 }
