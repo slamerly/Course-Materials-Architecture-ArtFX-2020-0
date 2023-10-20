@@ -26,19 +26,6 @@ int main(int argc, const char **argv)
 		.defaultValue("data")
 		.getValue();
 
-	engine::Engine engine{};
-
-	if (!engine.loadConfiguration())
-	{
-		return EXIT_FAILURE;
-	}
-
-	if (!engine.setUp())
-	{
-		engine.clear();
-		return EXIT_FAILURE;
-	}
-
 #if defined(PLATFORM_LINUX)
 	if (chdir(dataPath))
 	{
@@ -55,6 +42,21 @@ int main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 #endif
+
+	engine::Engine engine{};
+
+	std::cout << dataPath << std::endl;
+
+	if (!engine.loadConfiguration())
+	{
+		return EXIT_FAILURE;
+	}
+
+	if (!engine.setUp())
+	{
+		engine.clear();
+		return EXIT_FAILURE;
+	}
 
 	engine.run();
 	engine.clear();
