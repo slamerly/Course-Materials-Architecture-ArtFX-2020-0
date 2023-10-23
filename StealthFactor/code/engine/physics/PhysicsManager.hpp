@@ -1,33 +1,30 @@
 #pragma once
-#include <set>
 #include <vector>
 #include <ode/common.h>
 #include "engine/physics/CollisionVolumeId.h"
+#include <engine/physics/EntitiesCollision.h>
 #include <SFML/System/Vector2.hpp>
 
 namespace engine
 {
-	namespace gameplay
-	{
-		class Entity;
-	}
-
 	namespace physics
 	{
 		class PhysicsManager
 		{
 		public:
+
 			bool setUp();
 
 			void update();
 			void clear();
 
-			std::set<gameplay::Entity*> getCollisionsWith(CollisionVolumeId id) const;
-
-			CollisionVolumeId createCollisionBox(gameplay::Entity* entity, float width, float height);
+			CollisionVolumeId createBoxCollision(const gameplay::Entity &entity);
 			void destroyCollisionVolume(CollisionVolumeId id);
 
 			void setCollisionVolumePosition(CollisionVolumeId id, const sf::Vector2f& position);
+			void setBoxCollisionSize(CollisionVolumeId id, const sf::Vector2f& size);
+
+			EntitySet getCollisionsWith(CollisionVolumeId id) const;
 
 		private:
 

@@ -104,5 +104,11 @@ namespace engine
 			ShapeListInstance* instance = id;
 			instance->transform = transform;
 		}
+
+		void GraphicsManager::setShapeListInstanceMatrix(ShapeListId id, const sf::Transform& matrix)
+		{
+			ShapeListInstance* instance = id;
+			instance->transform = matrix;
+		}
 	}
 }

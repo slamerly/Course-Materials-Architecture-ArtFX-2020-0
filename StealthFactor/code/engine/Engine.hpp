@@ -11,6 +11,7 @@ namespace engine
 	class Engine : public EventListener
 	{
 	public:
+
 		Engine();
 
 		bool loadConfiguration();
@@ -23,7 +24,7 @@ namespace engine
 
 		void exit();
 
-		void onEvent(const sf::Event& event) override;
+		void onEvent(const sf::Event &event) override;
 
 	private:
 

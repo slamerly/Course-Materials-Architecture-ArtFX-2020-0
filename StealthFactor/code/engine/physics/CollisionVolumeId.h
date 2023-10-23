@@ -1,5 +1,4 @@
 #pragma once
-
 #include <ode/common.h>
 
 namespace engine

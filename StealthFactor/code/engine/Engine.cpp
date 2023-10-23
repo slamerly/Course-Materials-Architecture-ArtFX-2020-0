@@ -10,7 +10,7 @@ namespace engine
 {
 	Engine::Engine() :
 		gameplayM{ graphicsM, inputM, physicsM},
-		graphicsM{ gameplayM, *this}
+		graphicsM{ *this}
 	{
 	}
 

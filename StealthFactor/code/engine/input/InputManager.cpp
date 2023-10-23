@@ -1,5 +1,4 @@
 #include "engine/input/InputManager.hpp"
-
 #include <iterator>
 
 namespace engine

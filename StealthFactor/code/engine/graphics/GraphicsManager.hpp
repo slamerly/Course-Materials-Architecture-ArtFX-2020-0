@@ -1,5 +1,4 @@
 #pragma once
-
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <cassert>
 #include <set>
@@ -41,6 +40,8 @@ namespace engine
 
 			void destroyShapeListInstance(ShapeListId id);
 			void setShapeListInstanceTransform(ShapeListId id, const sf::Transform& transform);
+
+			void setShapeListInstanceMatrix(ShapeListId id, const sf::Transform& matrix);
 
 		private:
 

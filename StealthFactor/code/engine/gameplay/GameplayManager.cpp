@@ -1,15 +1,13 @@
 #include "engine/gameplay/GameplayManager.hpp"
-
 #include <cstring>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 #include <pugixml/pugixml.hpp>
-#include <engine/Engine.hpp>
-#include <engine/gameplay/entities/Enemy.hpp>
-#include <engine/gameplay/entities/Player.hpp>
-#include <engine/gameplay/entities/Target.hpp>
+#include <engine/gameplay/Prefab.h>
+#include <engine/gameplay/components/Transform.h>
+#include <engine/gameplay/components/Player.hpp>
 
 namespace engine
 {
@@ -17,13 +15,14 @@ namespace engine
 	{
 		const float GameplayManager::CELL_SIZE = 50.f;
 
-		GameplayManager::GameplayManager(graphics::GraphicsManager& graphicsManager, input::InputManager& inputManager, physics::PhysicsManager& physicsManager)
-			: _context{ graphicsManager, inputManager, physicsManager, *this }
+		GameplayManager::GameplayManager(graphics::GraphicsManager& graphicsManager, input::InputManager& inputManager, physics::PhysicsManager& physicsManager) : _context{ graphicsManager, inputManager, physicsManager, *this }
 		{
+
 		}
 
 		void GameplayManager::setUp()
 		{
+
 		}
 
 		void GameplayManager::clear()
@@ -69,54 +68,52 @@ namespace engine
 
 				for (auto& xmlElement : xmlMap.child("elements").children())
 				{
+					std::string prefabName;
+
 					if (!std::strcmp(xmlElement.name(), "enemy"))
 					{
+						prefabName = xmlElement.child_value("prefab");
+					}
+					else if (!std::strcmp(xmlElement.name(), "player"))
+					{
+						prefabName = "player";
+					}
+					else if (!std::strcmp(xmlElement.name(), "target"))
+					{
+						prefabName = "target";
+					}
+					else
+					{
+						std::cerr << "Unknown prefab  [" << xmlElement.name() << "]." << std::endl;
+						continue;
+					}
+
+					std::unique_ptr<Prefab> prefab{ new Prefab{ prefabName} };
+					auto entity = prefab->instantiate(_context);
+
+					if (entity)
+					{
+						auto transform = entity->getComponent<components::Transform>();
+
 						int row = std::stoi(xmlElement.child_value("row"));
 						assert(row >= 0 && row < _rows);
 
 						int column = std::stoi(xmlElement.child_value("column"));
 						assert(column >= 0 && column < _columns);
 
-						std::string archetypeName = xmlElement.child_value("archetype");
+						transform->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
 
-						auto enemyEntity{ new entities::Enemy{ _context, archetypeName } };
-						EntityPtr entity{ enemyEntity };
-						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
-						enemyEntity->propagateTransform();
+						auto player = entity->getComponent<components::Player>();
+						if (player)
+						{
+							playerComponent = player;
+						}
 
 						_entities.insert(std::move(entity));
 					}
-
-					if (!std::strcmp(xmlElement.name(), "player"))
+					else
 					{
-						int row = std::stoi(xmlElement.child_value("row"));
-						assert(row >= 0 && row < _rows);
-
-						int column = std::stoi(xmlElement.child_value("column"));
-						assert(column >= 0 && column < _columns);
-
-						_playerEntity = new entities::Player{ _context };
-						EntityPtr entity{ _playerEntity };
-						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
-						_playerEntity->propagateTransform();
-
-						_entities.insert(std::move(entity));
-					}
-
-					if (!std::strcmp(xmlElement.name(), "target"))
-					{
-						int row = std::stoi(xmlElement.child_value("row"));
-						assert(row >= 0 && row < _rows);
-
-						int column = std::stoi(xmlElement.child_value("column"));
-						assert(column >= 0 && column < _columns);
-
-						auto targetEntity = new entities::Target{ _context };
-						EntityPtr entity{ targetEntity };
-						entity->setPosition(sf::Vector2f{ (column + 0.5f) * CELL_SIZE, (row + 0.5f) * CELL_SIZE });
-						targetEntity->propagateTransform();
-
-						_entities.insert(std::move(entity));
+						std::cerr << "Prefab [" << prefabName << "] instantiated no entity." << std::endl;
 					}
 				}
 
@@ -149,21 +146,16 @@ namespace engine
 			}
 		}
 
-		const entities::Player& GameplayManager::getPlayer() const
+		const components::Player &GameplayManager::getPlayer() const
 		{
-			assert(_playerEntity);
-			return *_playerEntity;
-		}
-
-		sf::Vector2f GameplayManager::getViewCenter() const
-		{
-			return sf::Vector2f{ _columns * (CELL_SIZE / 2.f), _rows * (CELL_SIZE / 2.f) };
+			assert(playerComponent);
+			return *playerComponent;
 		}
 
 		void GameplayManager::removeEntities()
 		{
 			_entities.clear();
-			_playerEntity = nullptr;
+			playerComponent = nullptr;
 		}
 	}
 }
