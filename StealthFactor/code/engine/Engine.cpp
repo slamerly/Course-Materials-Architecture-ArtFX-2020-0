@@ -8,10 +8,9 @@
 
 namespace engine
 {
-	Engine::Engine() :
-		gameplayM{ graphicsM, inputM, physicsM},
-		graphicsM{ *this}
+	Engine::Engine() : gameplayM{ graphicsM, inputM, physicsM }, graphicsM{ *this }
 	{
+
 	}
 
 	bool Engine::loadConfiguration()

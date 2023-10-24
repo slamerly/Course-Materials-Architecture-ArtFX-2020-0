@@ -1,48 +1,25 @@
 #include "engine/graphics/GraphicsManager.hpp"
+#include <cassert>
 #include <SFML/Window/Event.hpp>
-#include <engine/graphics/ViewProvider.h>
+#include <engine/input/InputManager.hpp>
+#include <engine/graphics/View.h>
+#include <engine/graphics/ShapeListObserver.h>
+#include <engine/gameplay/GameplayManager.hpp>
+#include <engine/Engine.hpp>
+
 
 namespace engine
 {
 	namespace graphics
 	{
-		GraphicsManager::GraphicsManager(ViewProvider& viewprovider_, EventListener& eventListener_) :
-			center{ viewprovider_ },
-			listener{ eventListener_ }
+		GraphicsManager::GraphicsManager(EventListener& eventListener_) : listener{ eventListener_ }
 		{
-			window.create(sf::VideoMode{ (unsigned int)WINDOW_WIDTH, (unsigned int)WINDOW_HEIGHT }, "Stealth Factor");
 
-			window.setVerticalSyncEnabled(true);
-
-			sf::View view(sf::Vector2f{ 0.f, 0.f }, sf::Vector2f{ (float)WINDOW_WIDTH, (float)WINDOW_HEIGHT });
-			window.setView(view);
-			
 		}
 
 		GraphicsManager::~GraphicsManager()
 		{
-			window.close();
-		}
 
-		void GraphicsManager::draw()
-		{
-			window.clear(sf::Color::Black);
-
-			sf::View view{ center.getViewCenter(),sf::Vector2f((float)WINDOW_WIDTH, (float)WINDOW_HEIGHT) };
-			window.setView(view);
-
-
-			for (auto &instance : _shapeListInstances)
-			{
-				sf::RenderStates renderStates{ instance->transform };
-
-				for (auto& shape : instance->shapeList.getShapes())
-				{
-					window.draw(*shape, renderStates);
-				}
-			}
-
-			window.display();
 		}
 
 		bool GraphicsManager::setUp()
@@ -75,6 +52,64 @@ namespace engine
 			}
 		}
 
+		void GraphicsManager::draw()
+		{
+			window.clear(sf::Color::Black);
+
+			assert(activeView);
+			sf::View view{ activeView->getPosition(), sf::Vector2f{ (float)WINDOW_WIDTH, (float)WINDOW_HEIGHT } };
+			window.setView(view);
+
+
+			for (auto &instance : _shapeListInstances)
+			{
+				sf::RenderStates renderStates{ instance->transform };
+
+				for (auto& shape : instance->shapeList.getShapes())
+				{
+					window.draw(*shape, renderStates);
+				}
+			}
+
+			window.display();
+		}
+
+		// VIEW
+
+		ViewId GraphicsManager::createView()
+		{
+			auto view{ new View() };
+			Views.insert(ViewPtr{ view });
+			return view;
+		}
+
+		void GraphicsManager::destroyView(ViewId id)
+		{
+			auto it = std::find_if(
+				std::begin(Views),
+				std::end(Views),
+				[id](const ViewPtr &view)
+				{
+					return view.get() == id;
+				});
+			assert(it != std::end(Views));
+			Views.erase(it);
+		}
+
+		void GraphicsManager::setViewActive(ViewId id)
+		{
+			assert(id);
+			activeView = id;
+		}
+
+		void GraphicsManager::setViewPosition(ViewId id, const sf::Vector2f &position)
+		{
+			assert(id);
+			auto View = id;
+			View->setPosition(position);
+		}
+
+
 		ShapeListId GraphicsManager::createShapeListInstance(const std::string& name)
 		{
 			auto instance{ new ShapeListInstance() };
@@ -97,12 +132,6 @@ namespace engine
 				});
 			assert(it != std::end(_shapeListInstances));
 			_shapeListInstances.erase(it);
-		}
-
-		void GraphicsManager::setShapeListInstanceTransform(ShapeListId id, const sf::Transform& transform)
-		{
-			ShapeListInstance* instance = id;
-			instance->transform = transform;
 		}
 
 		void GraphicsManager::setShapeListInstanceMatrix(ShapeListId id, const sf::Transform& matrix)

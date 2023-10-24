@@ -6,6 +6,7 @@
 #include <engine/gameplay/Entity.hpp>
 #include <engine/gameplay/components/BoxCollision.h>
 #include <engine/gameplay/components/Enemy.hpp>
+#include <engine/gameplay/components/View.h>
 #include <engine/gameplay/components/Player.hpp>
 #include <engine/gameplay/components/Renderer.h>
 #include <engine/gameplay/components/Target.hpp>
@@ -15,9 +16,9 @@ namespace engine
 {
 	namespace gameplay
 	{
-		Prefab::Prefab(const std::string& name)
-			: _name{ name }
+		Prefab::Prefab(const std::string& name) : _name{ name }
 		{
+
 		}
 
 		std::unique_ptr<Entity> Prefab::instantiate(EntityContext& context) const
@@ -41,8 +42,11 @@ namespace engine
 
 				for (auto& xmlElement : xmlMap.child("components").children())
 				{
-
-					if (!std::strcmp(xmlElement.name(), "collision_box"))
+					if (!std::strcmp(xmlElement.name(), "view"))
+					{
+						entity->addComponent<components::View>();
+					}
+					else if (!std::strcmp(xmlElement.name(), "collision_box"))
 					{
 						auto& collisionBox = entity->addComponent<components::BoxCollision>();
 

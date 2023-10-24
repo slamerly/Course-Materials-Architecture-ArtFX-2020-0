@@ -14,14 +14,14 @@ namespace engine
 			virtual void update();
 			virtual void onTransformChange();
 
-			Entity& getEntity();
-			const Entity& getEntity() const;
+			Entity &getEntity();
+			const Entity &getEntity() const;
 
 		protected:
-			Component(Entity& entity);
+			Component(Entity &entity);
 
 		private:
-			Entity& entity;
+			Entity &entity;
 		};
 	}
 }

@@ -1,14 +1,9 @@
 #pragma once
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <cassert>
-#include <set>
 #include <memory>
-#include <SFML/Graphics/Shape.hpp>
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Transform.hpp>
-#include <engine/graphics/ShapeList.hpp>
+#include <set>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <engine/graphics/ViewId.h>
 #include <engine/graphics/ShapeListObserver.h>
-#include <engine/EventListener.h>
 
 namespace engine
 {
@@ -16,45 +11,50 @@ namespace engine
 
 	namespace graphics
 	{
-		class ShapeList;
-		class ViewProvider;
-
+		class View;
 		struct ShapeListObserver;
 
 		class GraphicsManager
 		{
 		public:
 
-			GraphicsManager(ViewProvider &viewprovider_, EventListener &eventListener_);
+			GraphicsManager(EventListener &eventListener_);
 			~GraphicsManager();
-
-			//void clear();
-			void draw();
 
 			bool setUp();
 			void clear();
 
 			void pollEvent();
+			void draw();
 
-			ShapeListId createShapeListInstance(const std::string& name);
+			// Views
 
+			ViewId createView();
+			void destroyView(ViewId id);
+
+			void setViewActive(ViewId id);
+			void setViewPosition(ViewId id, const sf::Vector2f &position);
+
+			ShapeListId createShapeListInstance(const std::string &name);
 			void destroyShapeListInstance(ShapeListId id);
-			void setShapeListInstanceTransform(ShapeListId id, const sf::Transform& transform);
 
 			void setShapeListInstanceMatrix(ShapeListId id, const sf::Transform& matrix);
 
 		private:
 
-			sf::RenderWindow window;
+			using ViewPtr = std::unique_ptr<View>;
 			using ShapeListInstancePtr = std::unique_ptr<ShapeListInstance>;
 
-			ViewProvider &center;
-			EventListener &listener;
+			EventListener& listener;
+			sf::RenderWindow window;
+			
+			std::set<ViewPtr> Views;
+			View *activeView{};
+
+			std::set<ShapeListInstancePtr> _shapeListInstances;
 
 			static const sf::Int16 WINDOW_WIDTH = 800;
 			static const sf::Int16 WINDOW_HEIGHT = 600;
-
-			std::set<ShapeListInstancePtr> _shapeListInstances;
 
 		};
 	}

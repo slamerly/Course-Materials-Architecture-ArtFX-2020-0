@@ -6,6 +6,7 @@
 #include <vector>
 #include <pugixml/pugixml.hpp>
 #include <engine/gameplay/Prefab.h>
+#include <engine/gameplay/components/View.h>
 #include <engine/gameplay/components/Transform.h>
 #include <engine/gameplay/components/Player.hpp>
 
@@ -116,6 +117,12 @@ namespace engine
 						std::cerr << "Prefab [" << prefabName << "] instantiated no entity." << std::endl;
 					}
 				}
+
+				std::unique_ptr<Prefab> ViewPrefab{ new Prefab{ "View" } };
+				auto ViewEntity = ViewPrefab->instantiate(_context);
+				ViewEntity->getComponent<components::View>()->setActive();
+				ViewEntity->getComponent<components::Transform>()->setPosition(sf::Vector2f{ _columns * (CELL_SIZE / 2.f), _rows * (CELL_SIZE / 2.f) });
+				_entities.insert(std::move(ViewEntity));
 
 				_currentMapName = mapName;
 				_nextMapName = xmlMap.child_value("next_map");
