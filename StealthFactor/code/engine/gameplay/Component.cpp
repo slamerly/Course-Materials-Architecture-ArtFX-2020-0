@@ -4,7 +4,7 @@ namespace engine
 {
 	namespace gameplay
 	{
-		Component::Component(Entity &entity) : entity{ entity }
+		Component::Component(Entity &entityp) : _entity{ entityp }
 		{
 
 		}
@@ -21,7 +21,7 @@ namespace engine
 
 		Entity &Component::getEntity()
 		{
-			return entity;
+			return _entity;
 		}
 
 		const Entity &Component::getEntity() const

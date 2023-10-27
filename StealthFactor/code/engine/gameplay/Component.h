@@ -21,7 +21,7 @@ namespace engine
 			Component(Entity &entity);
 
 		private:
-			Entity &entity;
+			Entity &_entity;
 		};
 	}
 }
