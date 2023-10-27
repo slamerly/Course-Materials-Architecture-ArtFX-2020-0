@@ -118,7 +118,7 @@ namespace engine
 					}
 				}
 
-				std::unique_ptr<Prefab> ViewPrefab{ new Prefab{ "View" } };
+				std::unique_ptr<Prefab> ViewPrefab{ new Prefab{ "view" } };
 				auto ViewEntity = ViewPrefab->instantiate(_context);
 				ViewEntity->getComponent<components::View>()->setActive();
 				ViewEntity->getComponent<components::Transform>()->setPosition(sf::Vector2f{ _columns * (CELL_SIZE / 2.f), _rows * (CELL_SIZE / 2.f) });
