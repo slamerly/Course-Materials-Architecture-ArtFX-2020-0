@@ -13,6 +13,7 @@ namespace engine
 		{
 			for (auto &component : components)
 			{
+				//
 				component->update();
 			}
 		}

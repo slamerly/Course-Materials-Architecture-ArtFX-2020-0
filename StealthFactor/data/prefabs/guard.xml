@@ -9,6 +9,7 @@
 			<archetype>guard</archetype>
 		</enemy>
 		<renderer>
+			<shapelist>guard</shapelist>
 		</renderer>
 	</components>
 </prefab>

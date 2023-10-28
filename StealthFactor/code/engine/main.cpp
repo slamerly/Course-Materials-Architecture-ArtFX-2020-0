@@ -45,7 +45,7 @@ int main(int argc, const char **argv)
 
 	engine::Engine engine{};
 
-	std::cout << dataPath << std::endl;
+	//std::cout << dataPath << std::endl;
 
 	if (!engine.loadConfiguration())
 	{

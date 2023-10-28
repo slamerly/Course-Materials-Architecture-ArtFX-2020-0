@@ -27,6 +27,7 @@ namespace engine
             void update();
 
             void loadMap(const std::string& mapName);
+            void scheduleLoadMap(const std::string& map_name);
 
             // EntityListener
             void gameOver() override;

@@ -89,6 +89,8 @@ namespace engine
 						continue;
 					}
 
+					std::cout << "prefabName: " << prefabName << std::endl;
+
 					std::unique_ptr<Prefab> prefab{ new Prefab{ prefabName} };
 					auto entity = prefab->instantiate(_context);
 
@@ -139,10 +141,19 @@ namespace engine
 			}
 		}
 
+		void GameplayManager::scheduleLoadMap(const std::string& map_name)
+		{
+			if (!_preventMapCompletion)
+			{
+				_nextMapRequested = true;
+				_nextMapName = map_name;
+			}
+		}
+
 		void GameplayManager::gameOver()
 		{
 			std::cout << "Game over" << std::endl;
-			loadMap(_currentMapName);
+			scheduleLoadMap(_currentMapName);
 		}
 
 		void GameplayManager::loadNextMap()

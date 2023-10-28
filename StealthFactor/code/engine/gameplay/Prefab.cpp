@@ -38,6 +38,8 @@ namespace engine
 
 				entity.reset(new Entity{ context });
 
+				std::cout << _name << ": " << std::endl;
+
 				entity->addComponent<components::Transform>();
 
 				for (auto& xmlElement : xmlMap.child("components").children())
@@ -45,6 +47,7 @@ namespace engine
 					if (!std::strcmp(xmlElement.name(), "view"))
 					{
 						entity->addComponent<components::View>();
+						std::cout << "	" << "View" << std::endl;
 					}
 					else if (!std::strcmp(xmlElement.name(), "collision_box"))
 					{
@@ -54,6 +57,7 @@ namespace engine
 						float height = std::stof(xmlElement.child_value("height"));
 
 						collisionBox.setSize(sf::Vector2f{ width, height });
+						std::cout << "	" << "collision_box" << std::endl;
 					}
 
 					else if (!std::strcmp(xmlElement.name(), "enemy"))
@@ -63,11 +67,13 @@ namespace engine
 						std::string archetype = xmlElement.child_value("archetype");
 
 						enemy.setArchetypeName(archetype);
+						std::cout << "	" << "enemy" << std::endl;
 					}
 
 					else if (!std::strcmp(xmlElement.name(), "player"))
 					{
 						entity->addComponent<components::Player>();
+						std::cout << "	" << "player" << std::endl;
 					}
 
 					else if (!std::strcmp(xmlElement.name(), "renderer"))
@@ -77,16 +83,19 @@ namespace engine
 						std::string shapelist = xmlElement.child_value("shapelist");
 
 						renderer.setShapeListName(shapelist);
+						std::cout << "	" << "renderer" << std::endl;
 					}
 
 					else if (!std::strcmp(xmlElement.name(), "target"))
 					{
 						entity->addComponent<components::Target>();
+						std::cout << "	" << "target" << std::endl;
 					}
 
 					else
 					{
 						std::cerr << "Unknown component  [" << xmlElement.name() << "]." << std::endl;
+						std::cout << "	" << "unknow" << std::endl;
 					}
 				}
 			}
